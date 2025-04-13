@@ -30,7 +30,7 @@ DEFAULT_DATA_QUALITY_RULESET = """
 Customerlanding_node1744548099603 = glueContext.create_dynamic_frame.from_options(format_options={"multiLine": "true"}, connection_type="s3", format="json", connection_options={"paths": ["s3://tomasz-project-stedi-lake-house/customer/landing/"], "recurse": True}, transformation_ctx="Customerlanding_node1744548099603")
 
 # Script generated for node Customer filter
-SqlQuery206 = '''
+SqlQuery9012 = '''
 -- {"customerName": "Santosh Clayton", "email": "Santosh.Clayton@test.com", "phone": "8015551212", "birthDay": "1900-01-01", "serialNumber": "50f7b4f3-7af5-4b07-a421-7b902c8d2b7c",
 -- "registrationDate": 1655564376361, "lastUpdateDate": 1655564376361, "shareWithResearchAsOfDate": 1655564376361, "shareWithPublicAsOfDate": 1655564376361, "shareWithFriendsAsOfDate": 
 
@@ -47,7 +47,7 @@ FROM (
 WHERE shareWithResearchAsOfDate IS NOT NULL OR shareWithResearchAsOfDate != ''
 AND birthDay IS NOT NULL OR birthDay != '';
 '''
-Customerfilter_node1744548110342 = sparkSqlQuery(glueContext, query = SqlQuery206, mapping = {"customer_trusted":Customerlanding_node1744548099603}, transformation_ctx = "Customerfilter_node1744548110342")
+Customerfilter_node1744548110342 = sparkSqlQuery(glueContext, query = SqlQuery9012, mapping = {"customer_trusted":Customerlanding_node1744548099603}, transformation_ctx = "Customerfilter_node1744548110342")
 
 # Script generated for node Customer trusted
 EvaluateDataQuality().process_rows(frame=Customerfilter_node1744548110342, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1744548071314", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})

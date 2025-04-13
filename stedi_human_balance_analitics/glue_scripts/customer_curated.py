@@ -27,13 +27,13 @@ DEFAULT_DATA_QUALITY_RULESET = """
 """
 
 # Script generated for node Step trainer landing
-Steptrainerlanding_node1744568552850 = glueContext.create_dynamic_frame.from_options(format_options={"multiLine": "true"}, connection_type="s3", format="json", connection_options={"paths": ["s3://tomasz-project-stedi-lake-house/step_trainer/landing/"], "recurse": True}, transformation_ctx="Steptrainerlanding_node1744568552850")
+Steptrainerlanding_node1744581428718 = glueContext.create_dynamic_frame.from_options(format_options={"multiLine": "true"}, connection_type="s3", format="json", connection_options={"paths": ["s3://tomasz-project-stedi-lake-house/step_trainer/landing/"], "recurse": True}, transformation_ctx="Steptrainerlanding_node1744581428718")
 
 # Script generated for node Customer trusted
-Customertrusted_node1744568555885 = glueContext.create_dynamic_frame.from_options(format_options={"multiLine": "true"}, connection_type="s3", format="json", connection_options={"paths": ["s3://tomasz-project-stedi-lake-house/customer/trusted/"], "recurse": True}, transformation_ctx="Customertrusted_node1744568555885")
+Customertrusted_node1744581447281 = glueContext.create_dynamic_frame.from_catalog(database="stedi_db", table_name="customer_trusted", transformation_ctx="Customertrusted_node1744581447281")
 
 # Script generated for node SQL Query
-SqlQuery8106 = '''
+SqlQuery8548 = '''
 SELECT customerName, email, phone, birthday, serialnumber, registrationdate, lastupdatedate,
 sharewithresearchasofdate, sharewithpublicasofdate, sharewithfriendsasofdate
 FROM (
@@ -45,7 +45,7 @@ FROM (
     )
 WHERE RN = 1;
 '''
-SQLQuery_node1744568567092 = sparkSqlQuery(glueContext, query = SqlQuery8106, mapping = {"customer_trusted":Customertrusted_node1744568555885, "step_trainer_landing":Steptrainerlanding_node1744568552850}, transformation_ctx = "SQLQuery_node1744568567092")
+SQLQuery_node1744568567092 = sparkSqlQuery(glueContext, query = SqlQuery8548, mapping = {"step_trainer_landing":Steptrainerlanding_node1744581428718, "customer_trusted":Customertrusted_node1744581447281}, transformation_ctx = "SQLQuery_node1744568567092")
 
 # Script generated for node Customers curated
 EvaluateDataQuality().process_rows(frame=SQLQuery_node1744568567092, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1744566694575", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})
