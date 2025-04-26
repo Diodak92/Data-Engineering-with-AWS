@@ -4,7 +4,6 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-from awsgluedq.transforms import EvaluateDataQuality
 from awsglue import DynamicFrame
 
 def sparkSqlQuery(glueContext, query, mapping, transformation_ctx) -> DynamicFrame:
@@ -19,33 +18,22 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-# Default ruleset used by all target nodes with data quality enabled
-DEFAULT_DATA_QUALITY_RULESET = """
-    Rules = [
-        ColumnCount > 0
-    ]
-"""
-
 # Script generated for node Step trainer landing
-Steptrainerlanding_node1744572288658 = glueContext.create_dynamic_frame.from_options(format_options={"multiLine": "true"}, connection_type="s3", format="json", connection_options={"paths": ["s3://tomasz-project-stedi-lake-house/step_trainer/landing/"], "recurse": True}, transformation_ctx="Steptrainerlanding_node1744572288658")
+Steptrainerlanding_node1745692724201 = glueContext.create_dynamic_frame.from_catalog(database="stedi_db", table_name="step_trainer_landing", transformation_ctx="Steptrainerlanding_node1745692724201")
 
 # Script generated for node Customer curated
-Customercurated_node1744580842276 = glueContext.create_dynamic_frame.from_catalog(database="stedi_db", table_name="customers_curated", transformation_ctx="Customercurated_node1744580842276")
+Customercurated_node1745692723479 = glueContext.create_dynamic_frame.from_catalog(database="stedi_db", table_name="customer_curated", transformation_ctx="Customercurated_node1745692723479")
 
-# Script generated for node SQL Query
-SqlQuery7905 = '''
-SELECT from_unixtime(s.sensorReadingTime / 1000) AS sensorReadingTime,
-s.serialNumber, s.distanceFromObject 
+# Script generated for node INNER JOIN
+SqlQuery1056 = '''
+SELECT s.* 
 FROM step_trainer_landing s
 JOIN customer_curated c
-ON s.serialNumber = c.serialNumber;
+ON s.serialnumber = c.serialnumber;
 '''
-SQLQuery_node1744572292980 = sparkSqlQuery(glueContext, query = SqlQuery7905, mapping = {"step_trainer_landing":Steptrainerlanding_node1744572288658, "customer_curated":Customercurated_node1744580842276}, transformation_ctx = "SQLQuery_node1744572292980")
+INNERJOIN_node1745692726862 = sparkSqlQuery(glueContext, query = SqlQuery1056, mapping = {"step_trainer_landing":Steptrainerlanding_node1745692724201, "customer_curated":Customercurated_node1745692723479}, transformation_ctx = "INNERJOIN_node1745692726862")
 
-# Script generated for node Amazon S3
-EvaluateDataQuality().process_rows(frame=SQLQuery_node1744572292980, ruleset=DEFAULT_DATA_QUALITY_RULESET, publishing_options={"dataQualityEvaluationContext": "EvaluateDataQuality_node1744566694575", "enableDataQualityResultsPublishing": True}, additional_options={"dataQualityResultsPublishing.strategy": "BEST_EFFORT", "observations.scope": "ALL"})
-AmazonS3_node1744572303988 = glueContext.getSink(path="s3://tomasz-project-stedi-lake-house/step_trainer/trusted/", connection_type="s3", updateBehavior="UPDATE_IN_DATABASE", partitionKeys=[], enableUpdateCatalog=True, transformation_ctx="AmazonS3_node1744572303988")
-AmazonS3_node1744572303988.setCatalogInfo(catalogDatabase="stedi_db",catalogTableName="step_trainer_trusted")
-AmazonS3_node1744572303988.setFormat("json")
-AmazonS3_node1744572303988.writeFrame(SQLQuery_node1744572292980)
+# Script generated for node Step trainer trusted
+Steptrainertrusted_node1745692728849 = glueContext.write_dynamic_frame.from_catalog(frame=INNERJOIN_node1745692726862, database="stedi_db", table_name="step_trainer_trusted", additional_options={"enableUpdateCatalog": True, "updateBehavior": "UPDATE_IN_DATABASE"}, transformation_ctx="Steptrainertrusted_node1745692728849")
+
 job.commit()

@@ -1,0 +1,160 @@
+{
+	"dag": {
+		"node-1745693639696": {
+			"classification": "DataSource",
+			"type": "Catalog",
+			"name": "Accelerometer trusted",
+			"inputs": [],
+			"database": "stedi_db",
+			"table": "accelerometer_trusted",
+			"runtimeParameters": [],
+			"iconUrl": "https://a.b.cdn.console.awsstatic.com/a/v1/U6FB7X3PYBUNNYMUMPYLQBR5RMBXC6DMUISJREU2VUHU7SWIQR2A/static/media/data-catalog.8b8a27f5.svg",
+			"generatedNodeName": "Accelerometertrusted_node1745693639696",
+			"codeGenVersion": 2
+		},
+		"node-1745693640690": {
+			"classification": "DataSource",
+			"type": "Catalog",
+			"name": "Step trainer trusted",
+			"inputs": [],
+			"database": "stedi_db",
+			"table": "step_trainer_trusted",
+			"runtimeParameters": [],
+			"iconUrl": "https://a.b.cdn.console.awsstatic.com/a/v1/U6FB7X3PYBUNNYMUMPYLQBR5RMBXC6DMUISJREU2VUHU7SWIQR2A/static/media/data-catalog.8b8a27f5.svg",
+			"generatedNodeName": "Steptrainertrusted_node1745693640690",
+			"codeGenVersion": 2
+		},
+		"node-1745693645538": {
+			"classification": "Transform",
+			"type": "SqlCode",
+			"name": "INNER JOIN",
+			"inputs": [
+				"node-1745693640690",
+				"node-1745693639696"
+			],
+			"sqlAliases": [
+				{
+					"from": "node-1745693640690",
+					"alias": "step_trainer_trusted"
+				},
+				{
+					"from": "node-1745693639696",
+					"alias": "accelerometer_trusted"
+				}
+			],
+			"sqlQuery": "SELECT DISTINCT a.user, s.serialnumber, a.timestamp, \ns.distanceFromObject, a.x, a.y, a.z\nFROM step_trainer_trusted s\nJOIN accelerometer_trusted a\nON s.sensorreadingtime = a.timestamp;",
+			"iconUrl": "https://a.b.cdn.console.awsstatic.com/a/v1/U6FB7X3PYBUNNYMUMPYLQBR5RMBXC6DMUISJREU2VUHU7SWIQR2A/static/media/SQL.897bb48d.svg",
+			"generatedNodeName": "INNERJOIN_node1745693645538",
+			"codeGenVersion": 2,
+			"outputSchemas": [
+				[
+					{
+						"key": "user",
+						"fullPath": [
+							"user"
+						],
+						"type": "string"
+					},
+					{
+						"key": "serialnumber",
+						"fullPath": [
+							"serialnumber"
+						],
+						"type": "string"
+					},
+					{
+						"key": "timestamp",
+						"fullPath": [
+							"timestamp"
+						],
+						"type": "long"
+					},
+					{
+						"key": "distanceFromObject",
+						"fullPath": [
+							"distanceFromObject"
+						],
+						"type": "int"
+					},
+					{
+						"key": "x",
+						"fullPath": [
+							"x"
+						],
+						"type": "double"
+					},
+					{
+						"key": "y",
+						"fullPath": [
+							"y"
+						],
+						"type": "double"
+					},
+					{
+						"key": "z",
+						"fullPath": [
+							"z"
+						],
+						"type": "double"
+					}
+				]
+			]
+		},
+		"node-1745693648718": {
+			"classification": "DataSink",
+			"type": "Catalog",
+			"name": "Machine learning curated",
+			"inputs": [
+				"node-1745693645538"
+			],
+			"database": "stedi_db",
+			"table": "machine_learning_curated",
+			"runtimeParameters": [],
+			"format": "json",
+			"partitionKeys": [],
+			"updateCatalogOptions": "schemaAndPartitions",
+			"schemaChangePolicy": {
+				"enableUpdateCatalog": true,
+				"updateBehavior": "UPDATE_IN_DATABASE"
+			},
+			"iconUrl": "https://a.b.cdn.console.awsstatic.com/a/v1/U6FB7X3PYBUNNYMUMPYLQBR5RMBXC6DMUISJREU2VUHU7SWIQR2A/static/media/data-catalog.8b8a27f5.svg",
+			"generatedNodeName": "Machinelearningcurated_node1745693648718",
+			"codeGenVersion": 2
+		}
+	},
+	"jobConfig": {
+		"command": "glueetl",
+		"description": "",
+		"role": "arn:aws:iam::294738127702:role/my-glue-service-role",
+		"scriptName": "machine_learning_curated.py",
+		"version": "5.0",
+		"language": "python-3",
+		"scriptLocation": "s3://aws-glue-assets-294738127702-us-east-1/scripts/",
+		"temporaryDirectory": "s3://aws-glue-assets-294738127702-us-east-1/temporary/",
+		"timeout": 480,
+		"maxConcurrentRuns": 1,
+		"workerType": "G.1X",
+		"numberOfWorkers": 10,
+		"maxRetries": 0,
+		"metrics": true,
+		"observabilityMetrics": true,
+		"security": "none",
+		"bookmark": "job-bookmark-disable",
+		"logging": false,
+		"spark": true,
+		"sparkConfiguration": "standard",
+		"sparkPath": "s3://aws-glue-assets-294738127702-us-east-1/sparkHistoryLogs/",
+		"serverEncryption": false,
+		"glueHiveMetastore": true,
+		"etlAutoScaling": false,
+		"etlAutoTuning": true,
+		"jobParameters": [],
+		"tags": [],
+		"connectionsList": [],
+		"jobMode": "VISUAL_MODE",
+		"name": "machine_learning_curated",
+		"pythonPath": "",
+		"flexExecution": true
+	},
+	"hasBeenSaved": false
+}
