@@ -25,13 +25,13 @@ Accelerometertrusted_node1745684461234 = glueContext.create_dynamic_frame.from_c
 Customertrusted_node1745684462373 = glueContext.create_dynamic_frame.from_catalog(database="stedi_db", table_name="customer_trusted", transformation_ctx="Customertrusted_node1745684462373")
 
 # Script generated for node INNER JOIN
-SqlQuery1213 = '''
-SELECT c.* 
+SqlQuery1234 = '''
+SELECT DISTINCT c.* 
 FROM customer_trusted c
 JOIN accelerometer_trusted a
 ON c.email = a.user;
 '''
-INNERJOIN_node1745684465187 = sparkSqlQuery(glueContext, query = SqlQuery1213, mapping = {"customer_trusted":Customertrusted_node1745684462373, "accelerometer_trusted":Accelerometertrusted_node1745684461234}, transformation_ctx = "INNERJOIN_node1745684465187")
+INNERJOIN_node1745684465187 = sparkSqlQuery(glueContext, query = SqlQuery1234, mapping = {"customer_trusted":Customertrusted_node1745684462373, "accelerometer_trusted":Accelerometertrusted_node1745684461234}, transformation_ctx = "INNERJOIN_node1745684465187")
 
 # Script generated for node Customer curated
 Customercurated_node1745684467623 = glueContext.write_dynamic_frame.from_catalog(frame=INNERJOIN_node1745684465187, database="stedi_db", table_name="customer_curated", additional_options={"enableUpdateCatalog": True, "updateBehavior": "UPDATE_IN_DATABASE"}, transformation_ctx="Customercurated_node1745684467623")

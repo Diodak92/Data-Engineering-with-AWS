@@ -25,13 +25,13 @@ Steptrainerlanding_node1745692724201 = glueContext.create_dynamic_frame.from_cat
 Customercurated_node1745692723479 = glueContext.create_dynamic_frame.from_catalog(database="stedi_db", table_name="customer_curated", transformation_ctx="Customercurated_node1745692723479")
 
 # Script generated for node INNER JOIN
-SqlQuery1131 = '''
-SELECT DISTINCT s.* 
+SqlQuery1416 = '''
+SELECT s.* 
 FROM step_trainer_landing s
 JOIN customer_curated c
 ON s.serialnumber = c.serialnumber;
 '''
-INNERJOIN_node1745692726862 = sparkSqlQuery(glueContext, query = SqlQuery1131, mapping = {"step_trainer_landing":Steptrainerlanding_node1745692724201, "customer_curated":Customercurated_node1745692723479}, transformation_ctx = "INNERJOIN_node1745692726862")
+INNERJOIN_node1745692726862 = sparkSqlQuery(glueContext, query = SqlQuery1416, mapping = {"step_trainer_landing":Steptrainerlanding_node1745692724201, "customer_curated":Customercurated_node1745692723479}, transformation_ctx = "INNERJOIN_node1745692726862")
 
 # Script generated for node Step trainer trusted
 Steptrainertrusted_node1745692728849 = glueContext.write_dynamic_frame.from_catalog(frame=INNERJOIN_node1745692726862, database="stedi_db", table_name="step_trainer_trusted", additional_options={"enableUpdateCatalog": True, "updateBehavior": "UPDATE_IN_DATABASE"}, transformation_ctx="Steptrainertrusted_node1745692728849")
