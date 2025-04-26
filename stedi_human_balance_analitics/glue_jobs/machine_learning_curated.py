@@ -25,14 +25,14 @@ Accelerometertrusted_node1745693639696 = glueContext.create_dynamic_frame.from_c
 Steptrainertrusted_node1745693640690 = glueContext.create_dynamic_frame.from_catalog(database="stedi_db", table_name="step_trainer_trusted", transformation_ctx="Steptrainertrusted_node1745693640690")
 
 # Script generated for node INNER JOIN
-SqlQuery1144 = '''
-SELECT DISTINCT a.user, s.serialnumber, a.timestamp, 
+SqlQuery1222 = '''
+SELECT a.user, s.serialnumber, a.timestamp, 
 s.distanceFromObject, a.x, a.y, a.z
 FROM step_trainer_trusted s
 JOIN accelerometer_trusted a
 ON s.sensorreadingtime = a.timestamp;
 '''
-INNERJOIN_node1745693645538 = sparkSqlQuery(glueContext, query = SqlQuery1144, mapping = {"step_trainer_trusted":Steptrainertrusted_node1745693640690, "accelerometer_trusted":Accelerometertrusted_node1745693639696}, transformation_ctx = "INNERJOIN_node1745693645538")
+INNERJOIN_node1745693645538 = sparkSqlQuery(glueContext, query = SqlQuery1222, mapping = {"step_trainer_trusted":Steptrainertrusted_node1745693640690, "accelerometer_trusted":Accelerometertrusted_node1745693639696}, transformation_ctx = "INNERJOIN_node1745693645538")
 
 # Script generated for node Machine learning curated
 Machinelearningcurated_node1745693648718 = glueContext.write_dynamic_frame.from_catalog(frame=INNERJOIN_node1745693645538, database="stedi_db", table_name="machine_learning_curated", additional_options={"enableUpdateCatalog": True, "updateBehavior": "UPDATE_IN_DATABASE"}, transformation_ctx="Machinelearningcurated_node1745693648718")
