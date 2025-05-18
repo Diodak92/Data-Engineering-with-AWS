@@ -21,15 +21,15 @@ staging_events_table_create= ("""
         artist VARCHAR(100),
         auth VARCHAR(50),
         firstName VARCHAR(50),
-        gender VARCHAR(1),
+        gender CHAR,
         itemInSession INT,
         lastName VARCHAR(50),
-        length DOUBLE,
+        length FLOAT,
         level VARCHAR(4),
         location VARCHAR(100),
         method VARCHAR(3),
         page VARCHAR(20),
-        registration DOUBLE,
+        registration FLOAT,
         sessionId INT,
         song VARCHAR(100),
         status INT,
@@ -42,11 +42,11 @@ staging_events_table_create= ("""
 staging_songs_table_create = ("""
     CREATE TABLE IF NOT EXISTS staging_songs (
         artist_id VARCHAR(50),
-        artist_latitude DOUBLE,
+        artist_latitude FLOAT,
         artist_location VARCHAR(100),
-        artist_longitude DOUBLE,
+        artist_longitude FLOAT,
         artist_name VARCHAR(100),
-        duration DOUBLE,
+        duration FLOAT,
         num_songs INT,
         song_id VARCHAR(50),
         title VARCHAR(100),
@@ -73,7 +73,7 @@ user_table_create = ("""
         user_id INT PRIMARY KEY,
         first_name VARCHAR(50),
         last_name VARCHAR(50),
-        gender VARCHAR(1),
+        gender CHAR,
         level VARCHAR(4)
     )
 """)
@@ -84,7 +84,7 @@ song_table_create = ("""
         title VARCHAR(100),
         artist_id VARCHAR(50) NOT NULL,
         year INT,
-        duration DOUBLE
+        duration FLOAT
     )
 """)
 
@@ -93,8 +93,8 @@ artist_table_create = ("""
         artist_id VARCHAR(50) PRIMARY KEY,
         name VARCHAR(100),
         location VARCHAR(100),
-        latitude DOUBLE,
-        longitude DOUBLE
+        latitude FLOAT,
+        longitude FLOAT
     )
 """)
 

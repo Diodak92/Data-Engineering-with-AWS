@@ -49,8 +49,8 @@ def main():
     cur = conn.cursor()
     logger.info("Dropping existing tables...")
     drop_tables(cur, conn)
-    #create_tables(cur, conn)
-
+    logger.info("Creating new tables...")
+    create_tables(cur, conn)
     conn.close()
 
 
