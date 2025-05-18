@@ -1,29 +1,55 @@
 import configparser
 import psycopg2
+import logging
+import boto3
 from sql_queries import copy_table_queries, insert_table_queries
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def load_staging_tables(cur, conn):
     for query in copy_table_queries:
         cur.execute(query)
-        conn.commit()
 
 
 def insert_tables(cur, conn):
     for query in insert_table_queries:
         cur.execute(query)
-        conn.commit()
 
 
 def main():
     config = configparser.ConfigParser()
     config.read('dwh.cfg')
 
-    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['CLUSTER'].values()))
+    AWS_KEY = config.get("AWS","KEY")
+    AWS_SECRET = config.get("AWS","SECRET")
+    AWS_REGION = config.get("AWS","REGION")
+
+    CLUSTER_IDENTIFIER = config.get("REDSHIFT_CLUSTER", "CLUSTER_IDENTIFIER")
+    DB_NAME = config.get("REDSHIFT_CLUSTER", "DB_NAME")
+    DB_USER = config.get("REDSHIFT_CLUSTER", "DB_USER")
+    DB_PASSWORD = config.get("REDSHIFT_CLUSTER", "DB_PASSWORD")
+    DB_PORT = config.get("REDSHIFT_CLUSTER", "DB_PORT")
+
+    # Initialize a session using Amazon Redshift
+    redshift_client = boto3.client(
+        'redshift',
+        region_name=AWS_REGION,
+        aws_access_key_id=AWS_KEY,
+        aws_secret_access_key=AWS_SECRET
+        )
+
+    myClusterProps = redshift_client.describe_clusters(ClusterIdentifier=CLUSTER_IDENTIFIER)['Clusters'][0]
+    DWH_HOST = myClusterProps['Endpoint']['Address']
+
+    conn = psycopg2.connect(f"host={DWH_HOST} dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} port={DB_PORT}")
+    logger.info("Connected to Redshift cluster successfully.")
+    conn.autocommit = True
     cur = conn.cursor()
-    
+    logger.info("Loading staging tables...")
     load_staging_tables(cur, conn)
-    insert_tables(cur, conn)
+    #insert_tables(cur, conn)
 
     conn.close()
 

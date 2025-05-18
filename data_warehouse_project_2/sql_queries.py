@@ -1,12 +1,16 @@
 import configparser
-
+import os
 
 # CONFIG
 config = configparser.ConfigParser()
 config.read('dwh.cfg')
 
-# DROP TABLES
+DWH_ROLE_ARN = config['IAM_ROLE']['DWH_ROLE_ARN']
+S3_LOG_DATA_PATH = config['S3']['LOG_DATA']
+S3_SONG_DATA_PATH = config['S3']['SONG_DATA']
+LOG_JSON_PATH = config['S3']['LOG_JSON_PATH']
 
+# DROP TABLES
 staging_events_table_drop = "DROP TABLE IF EXISTS staging_events"
 staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs"
 songplay_table_drop = "DROP TABLE IF EXISTS songplays"
@@ -112,11 +116,23 @@ time_table_create = ("""
 
 # STAGING TABLES
 
-staging_events_copy = ("""
-""").format()
+staging_events_copy = (f"""
+    COPY staging_events
+    FROM '{S3_LOG_DATA_PATH}'
+    IAM_ROLE '{DWH_ROLE_ARN}'
+    REGION 'us-west-2'
+    FORMAT AS JSON '{LOG_JSON_PATH}'
+    TIMEFORMAT as 'epochmillisecs'
+    TRUNCATECOLUMNS BLANKSASNULL EMPTYASNULL
+""")
 
-staging_songs_copy = ("""
-""").format()
+staging_songs_copy = (f"""
+    COPY staging_songs
+    FROM '{S3_SONG_DATA_PATH}'
+    IAM_ROLE '{DWH_ROLE_ARN}'
+    REGION 'us-west-2'
+    JSON 'auto'
+""")
 
 # FINAL TABLES
 
