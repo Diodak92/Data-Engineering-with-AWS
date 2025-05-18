@@ -48,7 +48,7 @@ def main():
     conn.autocommit = True
     cur = conn.cursor()
     logger.info("Dropping existing tables...")
-    #drop_tables(cur, conn)
+    drop_tables(cur, conn)
     #create_tables(cur, conn)
 
     conn.close()

@@ -7,23 +7,56 @@ config.read('dwh.cfg')
 
 # DROP TABLES
 
-staging_events_table_drop = ""
-staging_songs_table_drop = ""
-songplay_table_drop = ""
-user_table_drop = ""
-song_table_drop = ""
-artist_table_drop = ""
-time_table_drop = ""
+staging_events_table_drop = "DROP TABLE IF EXISTS staging_events"
+staging_songs_table_drop = "DROP TABLE IF EXISTS staging_songs"
+songplay_table_drop = "DROP TABLE IF EXISTS songplays"
+user_table_drop = "DROP TABLE IF EXISTS users"
+song_table_drop = "DROP TABLE IF EXISTS songs"
+artist_table_drop = "DROP TABLE IF EXISTS artists"
+time_table_drop = "DROP TABLE IF EXISTS time"
 
 # CREATE TABLES
-
 staging_events_table_create= ("""
+    CREATE TABLE IF NOT EXISTS staging_events (
+        artist VARCHAR(100),
+        auth VARCHAR(50),
+        firstName VARCHAR(50),
+        gender VARCHAR(1),
+        itemInSession INT,
+        lastName VARCHAR(50),
+        length DOUBLE,
+        level VARCHAR(4),
+        location VARCHAR(100),
+        method VARCHAR(3),
+        page VARCHAR(20),
+        registration DOUBLE,
+        sessionId INT,
+        song VARCHAR(100),
+        status INT,
+        ts BIGINT,
+        userAgent VARCHAR(200),
+        userId INT
+    )
 """)
 
 staging_songs_table_create = ("""
+    CREATE TABLE IF NOT EXISTS staging_songs (
+        artist_id VARCHAR(50),
+        artist_latitude DOUBLE,
+        artist_location VARCHAR(100),
+        artist_longitude DOUBLE,
+        artist_name VARCHAR(100),
+        duration DOUBLE,
+        num_songs INT,
+        song_id VARCHAR(50),
+        title VARCHAR(100),
+        year INT
+    )
 """)
 
 songplay_table_create = ("""
+    CREATE TABLE IF NOT EXISTS songplays (
+        
 """)
 
 user_table_create = ("""
