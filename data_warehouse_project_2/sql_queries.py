@@ -56,19 +56,58 @@ staging_songs_table_create = ("""
 
 songplay_table_create = ("""
     CREATE TABLE IF NOT EXISTS songplays (
-        
+        songplay_id INT IDENTITY(0,1) PRIMARY KEY,
+        start_time TIMESTAMP NOT NULL,
+        user_id INT NOT NULL,
+        level VARCHAR(4) NOT NULL,
+        song_id VARCHAR(50) NOT NULL,
+        artist_id VARCHAR(50) NOT NULL,
+        session_id INT NOT NULL,
+        location VARCHAR(100),
+        user_agent VARCHAR(200)
+    )
 """)
 
 user_table_create = ("""
+    CREATE TABLE IF NOT EXISTS users (
+        user_id INT PRIMARY KEY,
+        first_name VARCHAR(50),
+        last_name VARCHAR(50),
+        gender VARCHAR(1),
+        level VARCHAR(4)
+    )
 """)
 
 song_table_create = ("""
+    CREATE TABLE IF NOT EXISTS songs (
+        song_id VARCHAR(50) PRIMARY KEY,
+        title VARCHAR(100),
+        artist_id VARCHAR(50) NOT NULL,
+        year INT,
+        duration DOUBLE
+    )
 """)
 
 artist_table_create = ("""
+    CREATE TABLE IF NOT EXISTS artists (
+        artist_id VARCHAR(50) PRIMARY KEY,
+        name VARCHAR(100),
+        location VARCHAR(100),
+        latitude DOUBLE,
+        longitude DOUBLE
+    )
 """)
 
 time_table_create = ("""
+    CREATE TABLE IF NOT EXISTS time (
+        start_time TIMESTAMP PRIMARY KEY,
+        hour INT,
+        day INT,
+        week INT,
+        month INT,
+        year INT,
+        weekday VARCHAR(10)
+    )
 """)
 
 # STAGING TABLES
