@@ -47,9 +47,9 @@ def main():
     logger.info("Connected to Redshift cluster successfully.")
     conn.autocommit = True
     cur = conn.cursor()
-
-    drop_tables(cur, conn)
-    create_tables(cur, conn)
+    logger.info("Dropping existing tables...")
+    #drop_tables(cur, conn)
+    #create_tables(cur, conn)
 
     conn.close()
 
