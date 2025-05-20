@@ -10,11 +10,13 @@ logger = logging.getLogger(__name__)
 
 def drop_tables(cur, conn):
     for query in drop_table_queries:
+        logger.info(f"Executing query: {query}")
         cur.execute(query)
 
 
 def create_tables(cur, conn):
     for query in create_table_queries:
+        logger.info(f"Executing query: {query}")
         cur.execute(query)
 
 

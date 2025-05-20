@@ -10,11 +10,13 @@ logger = logging.getLogger(__name__)
 
 def load_staging_tables(cur, conn):
     for query in copy_table_queries:
+        logger.info(f"Executing query: {query}")
         cur.execute(query)
 
 
 def insert_tables(cur, conn):
     for query in insert_table_queries:
+        logger.info(f"Executing query: {query}")
         cur.execute(query)
 
 
@@ -49,6 +51,7 @@ def main():
     cur = conn.cursor()
     logger.info("Loading staging tables...")
     load_staging_tables(cur, conn)
+    logger.info("Data loaded into staging tables successfully.")
     #insert_tables(cur, conn)
 
     conn.close()
