@@ -52,7 +52,7 @@ def main():
     logger.info("Loading staging tables...")
     load_staging_tables(cur, conn)
     logger.info("Data loaded into staging tables successfully.")
-    #insert_tables(cur, conn)
+    insert_tables(cur, conn)
 
     conn.close()
 
