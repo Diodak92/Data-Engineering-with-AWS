@@ -8,16 +8,22 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def drop_tables(cur, conn):
+def drop_tables(cur):
+    """Drop existing tables in the database."""
+    logger.info("Dropping existing tables...")
     for query in drop_table_queries:
         logger.info(f"Executing query: {query}")
         cur.execute(query)
+    logger.info("Dropped existing tables successfully.")
 
 
-def create_tables(cur, conn):
+def create_tables(cur):
+    """Create new tables in the database."""
+    logger.info("Creating new tables...")
     for query in create_table_queries:
         logger.info(f"Executing query: {query}")
         cur.execute(query)
+    logger.info("Created new tables successfully.")
 
 
 def main():
@@ -49,9 +55,7 @@ def main():
     logger.info("Connected to Redshift cluster successfully.")
     conn.autocommit = True
     cur = conn.cursor()
-    logger.info("Dropping existing tables...")
     drop_tables(cur, conn)
-    logger.info("Creating new tables...")
     create_tables(cur, conn)
     conn.close()
 

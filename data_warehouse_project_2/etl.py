@@ -8,16 +8,22 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def load_staging_tables(cur, conn):
+def load_staging_tables(cur):
+    """Load data into staging tables from S3."""
+    logger.info("Loading data into staging tables...")
     for query in copy_table_queries:
         logger.info(f"Executing query: {query}")
         cur.execute(query)
+    logger.info("Data loaded into staging tables successfully.")
 
 
-def insert_tables(cur, conn):
+def insert_tables(cur):
+    """Insert data into final tables from staging tables."""
+    logger.info("Inserting data into final tables...")
     for query in insert_table_queries:
         logger.info(f"Executing query: {query}")
         cur.execute(query)
+    logger.info("Data inserted into final tables successfully.")
 
 
 def main():
@@ -47,13 +53,11 @@ def main():
 
     conn = psycopg2.connect(f"host={DWH_HOST} dbname={DB_NAME} user={DB_USER} password={DB_PASSWORD} port={DB_PORT}")
     logger.info("Connected to Redshift cluster successfully.")
+    #  Create a cursor object
     conn.autocommit = True
     cur = conn.cursor()
-    logger.info("Loading staging tables...")
     load_staging_tables(cur, conn)
-    logger.info("Data loaded into staging tables successfully.")
     insert_tables(cur, conn)
-
     conn.close()
 
 
