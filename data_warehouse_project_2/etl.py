@@ -56,8 +56,8 @@ def main():
     #  Create a cursor object
     conn.autocommit = True
     cur = conn.cursor()
-    load_staging_tables(cur, conn)
-    insert_tables(cur, conn)
+    load_staging_tables(cur)
+    insert_tables(cur)
     conn.close()
 
 
