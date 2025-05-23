@@ -45,7 +45,7 @@ These tables will support Sparkify’s analytics team in discovering insights ab
 
 3. **🚀 Launch Redsift cluster**
    ```bash
-   create_redshift_cluster.py
+   python create_redshift_cluster.py
    ```
 4. **Create Tables in Redshift**
    Run this script to create the necessary tables:
