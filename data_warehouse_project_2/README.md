@@ -1,7 +1,7 @@
 
 # 🎧 Sparkify Data Warehouse Project
 
-## 📌 Project Overview
+## Project Overview
 
 **Sparkify**, a fast-growing music streaming startup, has expanded its user base and song catalog. To support better scalability and deeper analytics, Sparkify is migrating its data and processes to the cloud.
 
@@ -43,13 +43,17 @@ These tables will support Sparkify’s analytics team in discovering insights ab
      - Your **IAM Role ARN**
      - Your **Redshift cluster endpoint** and credentials
 
-3. **Create Tables in Redshift**
+3. **📌 Launch Redsift cluster**
+   ```bash
+   create_redshift_cluster.py
+   ```
+4. **Create Tables in Redshift**
    Run this script to create the necessary tables:
    ```bash
    python create_tables.py
    ```
 
-4. **Run the ETL Pipeline**
+5. **Run the ETL Pipeline**
    This script loads data from S3 into Redshift and transforms it into a star schema:
    ```bash
    python etl.py
