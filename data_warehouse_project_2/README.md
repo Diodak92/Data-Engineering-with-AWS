@@ -1,7 +1,7 @@
 
 # 🎧 Sparkify Data Warehouse Project
 
-## Project Overview
+## 📌 Project Overview
 
 **Sparkify**, a fast-growing music streaming startup, has expanded its user base and song catalog. To support better scalability and deeper analytics, Sparkify is migrating its data and processes to the cloud.
 
@@ -43,7 +43,7 @@ These tables will support Sparkify’s analytics team in discovering insights ab
      - Your **IAM Role ARN**
      - Your **Redshift cluster endpoint** and credentials
 
-3. **📌 Launch Redsift cluster**
+3. **🚀 Launch Redsift cluster**
    ```bash
    create_redshift_cluster.py
    ```
