@@ -22,6 +22,7 @@ These tables will support Sparkify’s analytics team in discovering insights ab
 
 | File | Description |
 |------|-------------|
+| `create_redshift_cluster.py` | Launch AWS Redshift Cluster and configure VPC |
 | `create_tables.py` | Creates all the necessary **staging** and **analytical tables** in Redshift |
 | `etl.py` | The core **ETL pipeline**. Loads raw data from S3 into staging tables in Redshift, then transforms and inserts it into dimensional tables |
 | `sql_queries.py` | Contains all the **SQL statements** used by the project (table creation, inserts, copies, etc.) |
