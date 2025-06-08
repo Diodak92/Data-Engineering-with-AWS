@@ -170,26 +170,23 @@ INSERT INTO songplays (start_time, user_id, level, song_id, artist_id, session_i
 
 user_table_insert = ("""
 INSERT INTO users (user_id, first_name, last_name, gender, level)
-    SELECT userId, firstName, lastName, gender, level
+    SELECT DISTINCT userId, firstName, lastName, gender, level
     FROM staging_events
-    WHERE userId IS NOT NULL
-    GROUP BY 1, 2, 3, 4, 5;
+    WHERE userId IS NOT NULL;
 """)
 
 song_table_insert = ("""
 INSERT INTO songs (song_id, title, artist_id, year, duration)
-    SELECT song_id, title, artist_id, year, duration
+    SELECT DIStiNCT song_id, title, artist_id, year, duration
     FROM staging_songs
-    WHERE song_id IS NOT NULL
-    GROUP BY 1, 2, 3, 4, 5;
+    WHERE song_id IS NOT NULL;
 """)
 
 artist_table_insert = ("""
 INSERT INTO artists (artist_id, name, location, latitude, longitude)
-    SELECT artist_id, artist_name, artist_location, artist_latitude, artist_longitude
+    SELECT DISTINCT artist_id, artist_name, artist_location, artist_latitude, artist_longitude
     FROM staging_songs
-    WHERE artist_id IS NOT NULL
-    GROUP BY 1, 2, 3, 4, 5;
+    WHERE artist_id IS NOT NULL;
 """)
 
 time_table_insert = ("""
