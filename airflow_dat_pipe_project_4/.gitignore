@@ -1,0 +1,46 @@
+**/excercises/*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.env
+*.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# Airflow
+airflow.db
+airflow.cfg
+logs/
+*.sqlite
+*.pid
+
+# Docker
+*.env
+docker-compose.override.yml
+.env.*
+
+# VSCode
+.vscode/
+
+# macOS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Other
+*.swp
+*.bak
+*.tmp
