@@ -15,8 +15,15 @@ default_args = {
 @dag(
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *'
+    schedule_interval='0 * * * *',
+    dependency_on_past=False,
+    retries=3,
+    retry_delay=timedelta(minutes=5),
+    catchup=False,
+    email_on_retry=False,
+    max_active_runs=1
 )
+
 def final_project():
 
     start_operator = DummyOperator(task_id='Begin_execution')
