@@ -16,7 +16,7 @@ default_args = {
     default_args=default_args,
     description='Load and transform data in Redshift with Airflow',
     schedule_interval='0 * * * *',
-    dependency_on_past=False,
+    depends_on_past=False,
     retries=3,
     retry_delay=timedelta(minutes=5),
     catchup=False,
