@@ -53,4 +53,13 @@ def final_project():
         task_id='Run_data_quality_checks',
     )
 
+    start_operator >> [stage_events_to_redshift, stage_songs_to_redshift]
+    [stage_events_to_redshift, stage_songs_to_redshift] >> load_songplays_table
+    load_songplays_table >> [load_user_dimension_table, load_song_dimension_table,
+        load_artist_dimension_table, load_time_dimension_table]
+    [load_user_dimension_table, load_song_dimension_table,
+    load_artist_dimension_table, load_time_dimension_table] >> run_quality_checks
+
 final_project_dag = final_project()
+
+
