@@ -1,3 +1,7 @@
+# Ignores all files in the AirflowExcercises folder 
+**/AirflowExcercises/*
+
+
 # Config files
 data_warehouse_project_2/dwh.cfg
 
