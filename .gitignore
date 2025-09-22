@@ -1,5 +1,6 @@
 # Ignores all files in the AirflowExcercises folder 
 **/AirflowExcercises/*
+airflow_dat_pipe_project_4/airflow-docker/logs/
 
 
 # Config files
