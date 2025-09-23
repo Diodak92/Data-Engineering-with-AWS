@@ -2,6 +2,20 @@
 **/AirflowExcercises/*
 airflow_dat_pipe_project_4/airflow-docker/logs/
 
+# Terraform files
+*.tf
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+terraform.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
 
 # Config files
 data_warehouse_project_2/dwh.cfg
