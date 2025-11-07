@@ -2,10 +2,37 @@
 import json
 import os
 import subprocess
+from pathlib import Path
 
-# Load Terraform outputs
-with open("tf_outputs.json", encoding="utf-8") as f:
-    outputs = json.load(f)
+SCRIPT_DIR = Path(__file__).resolve().parent
+OUTPUT_FILE = SCRIPT_DIR / "tf_outputs.json"
+
+
+def load_terraform_outputs():
+    """
+    Prefer reading fresh values via `terraform output -json`.
+    Fall back to tf_outputs.json only if it already exists.
+    """
+    if OUTPUT_FILE.exists():
+        with OUTPUT_FILE.open(encoding="utf-8") as f:
+            return json.load(f)
+
+    cmd = ["terraform", "output", "-json"]
+    try:
+        result = subprocess.run(
+            cmd,
+            cwd=SCRIPT_DIR,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            "Failed to run `terraform output -json`. "
+            "Did you run `terraform apply` inside infra/?"
+        ) from exc
+
+    return json.loads(result.stdout)
 
 
 def require_output(key: str):
@@ -14,10 +41,11 @@ def require_output(key: str):
     except KeyError as exc:  # provide actionable guidance
         raise RuntimeError(
             f"Terraform output '{key}' not found. "
-            "Run 'terraform output -json > tf_outputs.json' after a successful apply."
+            "Make sure Terraform applied successfully."
         ) from exc
 
 
+outputs = load_terraform_outputs()
 workgroup = require_output("workgroup_name")
 namespace = require_output("namespace_name")
 connection_details = require_output("connection_details")
