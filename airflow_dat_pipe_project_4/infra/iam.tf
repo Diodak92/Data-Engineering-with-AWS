@@ -1,23 +1,23 @@
-# Create a minimal IAM role for Redshift Serverless to interact with AWS services if needed
-resource "aws_iam_role" "redshift_role" {
-  name = "redshift-serverless-role"
-  assume_role_policy = jsonencode(
-    {
-      "Version" : "2012-10-17",
-      "Statement" : [
-        {
-          "Effect" : "Allow",
-          "Principal" : { "Service" : "redshift-serverless.amazonaws.com" },
-          "Action" : "sts:AssumeRole"
+resource "aws_iam_role" "redshift" {
+  name = "${var.workgroup_name}-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "redshift-serverless.amazonaws.com"
         }
-      ]
-    }
-  )
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+
+  tags = var.tags
 }
 
-# Attach some common managed policies
-# - S3 access from Redshift
-resource "aws_iam_role_policy_attachment" "redshift_s3_attach" {
-  role       = aws_iam_role.redshift_role.name
+resource "aws_iam_role_policy_attachment" "s3_read_only" {
+  role       = aws_iam_role.redshift.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
