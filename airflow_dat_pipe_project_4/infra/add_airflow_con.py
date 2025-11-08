@@ -90,13 +90,15 @@ subprocess.run(
      check=True)
 subprocess.run(
     ["aws", "s3", "cp",
-     "s3://udacity-dend/song-data/",
+     S3_LOG_DATA,
      "s3://tomasz-temp-bucket/song-data/",
      "--recursive"],
      check=True)
 subprocess.run(
     ["aws", "s3", "cp",
-     "s3://udacity-dend/log_json_path.json",
+     S3_SONG_DATA,
      "s3://tomasz-temp-bucket/",
      "--recursive"],
      check=True)
+
+print("Copying S3 data completed")
