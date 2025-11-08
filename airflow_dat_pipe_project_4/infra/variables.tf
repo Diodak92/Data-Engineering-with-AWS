@@ -1,3 +1,9 @@
+variable "s3_bucket_name" {
+  description = "Name for the main S3 bucket"
+  type        = string
+  default     = "tomasz-temp-bucket"
+}
+
 variable "aws_region" {
   description = "AWS region to deploy Redshift Serverless into"
   type        = string
