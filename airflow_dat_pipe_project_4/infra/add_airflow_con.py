@@ -6,6 +6,8 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 OUTPUT_FILE = SCRIPT_DIR / "tf_outputs.json"
+S3_LOG_DATA = "s3://udacity-dend/log_data",
+S3_SONG_DATA = "s3://udacity-dend/song-data"
 
 
 def load_terraform_outputs():
@@ -78,3 +80,23 @@ subprocess.run([
 
 print(f"Airflow connection '{conn_id}' created inside container '{airflow_container}' "
       f"for Redshift workgroup {workgroup} in namespace {namespace}")
+
+print("Copying S3 data from Udacity bucket")
+subprocess.run(
+    ["aws", "s3", "cp", 
+     "s3://udacity-dend/log-data/",
+     "s3://tomasz-temp-bucket/log-data/",
+     "--recursive"],
+     check=True)
+subprocess.run(
+    ["aws", "s3", "cp",
+     "s3://udacity-dend/song-data/",
+     "s3://tomasz-temp-bucket/song-data/",
+     "--recursive"],
+     check=True)
+subprocess.run(
+    ["aws", "s3", "cp",
+     "s3://udacity-dend/log_json_path.json",
+     "s3://tomasz-temp-bucket/",
+     "--recursive"],
+     check=True)
