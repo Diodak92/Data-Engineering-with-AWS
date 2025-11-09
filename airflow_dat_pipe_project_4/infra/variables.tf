@@ -4,6 +4,12 @@ variable "s3_bucket_name" {
   default     = "tomasz-temp-bucket"
 }
 
+variable "airflow_s3_variable_name" {
+  description = "Airflow Variable name that stores the project S3 bucket value"
+  type        = string
+  default     = "S3_BUCKET"
+}
+
 variable "aws_region" {
   description = "AWS region to deploy Redshift Serverless into"
   type        = string

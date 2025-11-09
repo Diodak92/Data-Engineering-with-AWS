@@ -60,3 +60,13 @@ output "aws_airflow_admin_credentials" {
   }
   sensitive = true
 }
+
+output "s3_bucket_name" {
+  description = "Primary S3 bucket used by the pipeline"
+  value       = var.s3_bucket_name
+}
+
+output "airflow_s3_variable_name" {
+  description = "Name of the Airflow Variable that stores the S3 bucket"
+  value       = var.airflow_s3_variable_name
+}
