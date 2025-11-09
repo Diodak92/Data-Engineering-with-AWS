@@ -10,6 +10,10 @@ resource "aws_iam_user" "lb" {
   }
 }
 
+resource "aws_iam_access_key" "airflow_admin" {
+  user = aws_iam_user.lb.name
+}
+
 data "aws_iam_policy_document" "airflow_permissions_boundary" {
   statement {
     sid    = "AdministratorAccessBoundary"
