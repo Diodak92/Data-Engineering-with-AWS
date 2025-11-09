@@ -46,3 +46,17 @@ output "connection_details" {
   }
   sensitive = true
 }
+
+output "aws_region" {
+  description = "AWS region used for the deployment"
+  value       = var.aws_region
+}
+
+output "aws_airflow_admin_credentials" {
+  description = "Programmatic access keys for the aws_airflow_admin IAM user"
+  value = {
+    access_key_id     = aws_iam_access_key.airflow_admin.id
+    secret_access_key = aws_iam_access_key.airflow_admin.secret
+  }
+  sensitive = true
+}
