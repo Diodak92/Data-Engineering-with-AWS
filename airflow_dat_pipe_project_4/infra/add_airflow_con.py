@@ -92,7 +92,7 @@ def add_connection(*cmd):
     run_airflow_cli("connections", "add", *cmd)
 
 def set_airflow_variable(name: str, value: str):
-    run_airflow_cli("variable", "set", name, value)
+    run_airflow_cli("variables", "set", name, value)
 
 # Create Redshift connection
 add_connection(conn_id, "--conn-uri", conn_uri)
