@@ -48,6 +48,12 @@ outputs = load_terraform_outputs()
 workgroup = require_output("workgroup_name")
 namespace = require_output("namespace_name")
 connection_details = require_output("connection_details")
+aws_credentials = require_output("aws_airflow_admin_credentials")
+aws_region = (
+    outputs.get("aws_region", {}).get("value")
+    or os.getenv("AWS_REGION")
+    or os.getenv("AWS_DEFAULT_REGION")
+)
 
 endpoint = connection_details["host"]
 port = connection_details["port"]
@@ -59,6 +65,12 @@ conn_type = "redshift"
 login = connection_details.get("username") or os.getenv("TF_VAR_admin_username")
 password = connection_details.get("password") or os.getenv("TF_VAR_admin_password")
 
+aws_access_key_id = aws_credentials.get("access_key_id")
+aws_secret_access_key = aws_credentials.get("secret_access_key")
+
+if not all([aws_access_key_id, aws_secret_access_key]):
+    raise RuntimeError("Missing AWS IAM credentials in Terraform outputs. Did Terraform finish applying?")
+
 if not all([endpoint, port, schema, login, password]):
     raise RuntimeError("Missing Redshift connection details. Did Terraform finish applying?")
 
@@ -68,12 +80,31 @@ conn_uri = f"redshift://{login}:{password}@{endpoint}:{port}/{schema}"
 # Name of your Airflow container (check with `docker ps`)
 airflow_container = "airflow-docker-airflow-webserver-1"
 
-# Run airflow CLI inside the container
-subprocess.run([
-    "docker", "exec", airflow_container,
-    "airflow", "connections", "add", conn_id,
-    "--conn-uri", conn_uri
-], check=True)
+def add_connection(cmd):
+    subprocess.run([
+        "docker", "exec", airflow_container,
+        "airflow", "connections", "add",
+        *cmd,
+    ], check=True)
 
-print(f"Airflow connection '{conn_id}' created inside container '{airflow_container}' "
-      f"for Redshift workgroup {workgroup} in namespace {namespace}")
+# Create Redshift connection
+add_connection([conn_id, "--conn-uri", conn_uri])
+
+# Create AWS credentials connection
+aws_conn_id = "awc_credentaials"
+aws_cmd = [
+    aws_conn_id,
+    "--conn-type", "aws",
+    "--conn-login", aws_access_key_id,
+    "--conn-password", aws_secret_access_key,
+]
+
+if aws_region:
+    aws_cmd.extend(["--conn-extra", json.dumps({"region_name": aws_region})])
+
+add_connection(aws_cmd)
+
+print(
+    f"Airflow connections '{conn_id}' and '{aws_conn_id}' created inside container '{airflow_container}' "
+    f"for Redshift workgroup {workgroup} in namespace {namespace}"
+)
