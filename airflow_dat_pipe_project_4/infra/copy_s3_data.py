@@ -8,11 +8,8 @@ UDACITY_SONG_DATA = "s3://udacity-dend/song-data/"
 def run_aws_cp(source: str, destination: str) -> None:
     subprocess.run(
         [
-            "aws",
-            "s3",
-            "cp",
-            source,
-            destination,
+            "aws", "s3", "cp",
+            source, destination,
             "--recursive",
         ],
         check=True,

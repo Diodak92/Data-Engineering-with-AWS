@@ -68,5 +68,3 @@ def final_project():
     load_artist_dimension_table, load_time_dimension_table] >> run_quality_checks
 
 final_project_dag = final_project()
-
-
