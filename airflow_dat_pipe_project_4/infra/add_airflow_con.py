@@ -108,3 +108,13 @@ print(
     f"Airflow connections '{conn_id}' and '{aws_conn_id}' created inside container '{airflow_container}' "
     f"for Redshift workgroup {workgroup} in namespace {namespace}"
 )
+
+subprocess.run(
+            ["docker", "exec", "airflow-docker-airflow-webserver-1",
+             "airflow", "variable", "set",
+             "S3_BUCKET", "tomasz-temp-bucket"],
+            cwd=SCRIPT_DIR,
+            capture_output=True,
+            text=True,
+            check=True,
+        )
