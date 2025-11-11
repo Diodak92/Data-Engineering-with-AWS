@@ -31,15 +31,20 @@ class StageToRedshiftOperator(BaseOperator):
             s3_key=s3_key,
             schema=schema,
             redshift_conn_id=redshift_conn_id,
-            aws_conn_id=aws_conn_id
+            aws_conn_id=aws_conn_id,
             copy_options=["json"],
-            method = 'UPSERT',
-            )
+            method='APPEND',
+        )
 
     def execute(self, context):
-        self.log.info('StageToRedshiftOperator not implemented yet')
-        self.transfer_s3_to_redshift
-
+        self.log.info(
+            "Loading S3://%s/%s into %s.%s",
+            self.transfer_s3_to_redshift.s3_bucket,
+            self.transfer_s3_to_redshift.s3_key,
+            self.transfer_s3_to_redshift.schema,
+            self.transfer_s3_to_redshift.table,
+        )
+        self.transfer_s3_to_redshift.execute(context)
 
 
 
