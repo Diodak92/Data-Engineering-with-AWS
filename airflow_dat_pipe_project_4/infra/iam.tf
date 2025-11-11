@@ -22,22 +22,6 @@ data "aws_iam_policy_document" "airflow_permissions_boundary" {
     actions   = ["*"]
     resources = ["*"]
   }
-
-  statement {
-    sid    = "AmazonRedshiftFullAccessBoundary"
-    effect = "Allow"
-
-    actions   = ["redshift:*"]
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "AmazonS3FullAccessBoundary"
-    effect = "Allow"
-
-    actions   = ["s3:*"]
-    resources = ["*"]
-  }
 }
 
 resource "aws_iam_policy" "airflow_permissions_boundary" {
