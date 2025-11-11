@@ -30,10 +30,12 @@ def final_project():
 
     stage_events_to_redshift = StageToRedshiftOperator(
         task_id='Stage_events',
+        redshift_conn_id='redshift_serverless'
     )
 
     stage_songs_to_redshift = StageToRedshiftOperator(
         task_id='Stage_songs',
+        redshift_conn_id='redshift_serverless'
     )
 
     load_songplays_table = LoadFactOperator(

@@ -1,6 +1,6 @@
-from airflow.hooks.postgres_hook import PostgresHook
 from airflow.models import BaseOperator
 from airflow.utils.decorators import apply_defaults
+from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 
 class StageToRedshiftOperator(BaseOperator):
     ui_color = '#358140'
@@ -10,16 +10,35 @@ class StageToRedshiftOperator(BaseOperator):
                  # Define your operators params (with defaults) here
                  # Example:
                  # redshift_conn_id=your-connection-name
+                 table : str,
+                 s3_bucket : str,
+                 s3_key : str,
+                 schema : str,
                  redshift_conn_id : str,
+                 aws_conn_id : str,
                  *args, **kwargs):
 
         super(StageToRedshiftOperator, self).__init__(*args, **kwargs)
         # Map params here
         # Example:
         # self.conn_id = conn_id
+        
+        # Docs
+        #https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/_api/airflow/providers/amazon/aws/transfers/s3_to_redshift/index.html
+        self.transfer_s3_to_redshift = S3ToRedshiftOperator(
+            table=table,
+            s3_bucket=s3_bucket,
+            s3_key=s3_key,
+            schema=schema,
+            redshift_conn_id=redshift_conn_id,
+            aws_conn_id=aws_conn_id
+            copy_options=["json"],
+            method = 'UPSERT',
+            )
 
     def execute(self, context):
         self.log.info('StageToRedshiftOperator not implemented yet')
+        self.transfer_s3_to_redshift
 
 
 
