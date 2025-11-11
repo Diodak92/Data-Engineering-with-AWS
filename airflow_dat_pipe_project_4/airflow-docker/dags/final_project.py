@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 import pendulum
 import os
 from airflow.decorators import dag
+from airflow.models import Variable
 from airflow.operators.dummy import DummyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                        LoadDimensionOperator, DataQualityOperator)
@@ -26,16 +27,32 @@ default_args = {
 
 def final_project():
 
+    # Connection ids configured via Airflow UI/CLI
+    #redshift_conn_id = "redshift_serverless"
+    #aws_conn_id = "aws_credentaials"
+    s3_bucket_name = Variable.get("S3_BUCKET")
+
+
     start_operator = DummyOperator(task_id='Begin_execution')
 
     stage_events_to_redshift = StageToRedshiftOperator(
         task_id='Stage_events',
-        redshift_conn_id='redshift_serverless'
+        table='staging_events',
+        s3_bucket=s3_bucket_name,
+        s3_key='log-data',
+        schema='public',
+        redshift_conn_id='redshift_serverless',
+        aws_conn_id='aws_credentaials',
     )
 
     stage_songs_to_redshift = StageToRedshiftOperator(
         task_id='Stage_songs',
-        redshift_conn_id='redshift_serverless'
+        table='staging_songs',
+        s3_bucket=s3_bucket_name,
+        s3_key='song-data',
+        schema='public',
+        redshift_conn_id='redshift_serverless',
+        aws_conn_id='aws_credentaials',
     )
 
     load_songplays_table = LoadFactOperator(
