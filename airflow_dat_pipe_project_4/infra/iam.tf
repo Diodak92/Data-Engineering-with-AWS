@@ -69,3 +69,34 @@ resource "aws_iam_role_policy_attachment" "s3_read_only" {
   role       = aws_iam_role.redshift.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
 }
+
+data "aws_iam_policy_document" "airflow_admin_bucket_access" {
+  statement {
+    sid     = "AllowListBucket"
+    effect  = "Allow"
+    actions = ["s3:ListBucket"]
+
+    resources = [
+      aws_s3_bucket.automate_data_pipelines.arn,
+    ]
+  }
+
+  statement {
+    sid     = "AllowReadObjects"
+    effect  = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:GetObjectVersion",
+    ]
+
+    resources = [
+      "${aws_s3_bucket.automate_data_pipelines.arn}/*",
+    ]
+  }
+}
+
+resource "aws_iam_user_policy" "airflow_admin_bucket_access" {
+  name   = "aws-airflow-admin-bucket-access"
+  user   = aws_iam_user.lb.name
+  policy = data.aws_iam_policy_document.airflow_admin_bucket_access.json
+}
