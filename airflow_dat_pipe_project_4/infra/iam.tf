@@ -14,6 +14,8 @@ resource "aws_iam_access_key" "airflow_admin" {
   user = aws_iam_user.lb.name
 }
 
+data "aws_caller_identity" "current" {}
+
 data "aws_iam_policy_document" "airflow_permissions_boundary" {
   statement {
     sid    = "AdministratorAccessBoundary"
@@ -83,4 +85,34 @@ resource "aws_iam_user_policy" "airflow_admin_bucket_access" {
   name   = "aws-airflow-admin-bucket-access"
   user   = aws_iam_user.lb.name
   policy = data.aws_iam_policy_document.airflow_admin_bucket_access.json
+}
+
+data "aws_iam_policy_document" "airflow_admin_redshift_data" {
+  statement {
+    sid    = "AllowRedshiftDataAPI"
+    effect = "Allow"
+    actions = [
+      "redshift-serverless:GetCredentials",
+      "redshift-serverless:GetWorkgroup",
+      "redshift-serverless:ListWorkgroups",
+      "redshift-data:ExecuteStatement",
+      "redshift-data:BatchExecuteStatement",
+      "redshift-data:DescribeStatement",
+      "redshift-data:GetStatementResult",
+      "redshift-data:ListStatements",
+      "redshift-data:CancelStatement"
+    ]
+
+    resources = [
+      "*",
+      "arn:aws:redshift-serverless:${var.aws_region}:${data.aws_caller_identity.current.account_id}:workgroup/${var.workgroup_name}",
+      "arn:aws:redshift-serverless:${var.aws_region}:${data.aws_caller_identity.current.account_id}:namespace/${var.namespace_name}"
+    ]
+  }
+}
+
+resource "aws_iam_user_policy" "airflow_admin_redshift_data" {
+  name   = "aws-airflow-admin-redshift-data"
+  user   = aws_iam_user.lb.name
+  policy = data.aws_iam_policy_document.airflow_admin_redshift_data.json
 }
