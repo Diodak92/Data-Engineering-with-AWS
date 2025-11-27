@@ -95,3 +95,8 @@ CREATE TABLE public.users (
 	"level" varchar(256),
 	CONSTRAINT users_pkey PRIMARY KEY (userid)
 );
+
+-- Priviliges for IAM user for Redshift
+GRANT USAGE ON SCHEMA public TO "IAM:aws_airflow_admin";
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "IAM:aws_airflow_admin";
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO "IAM:aws_airflow_admin";
