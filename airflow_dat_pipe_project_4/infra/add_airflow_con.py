@@ -113,6 +113,7 @@ add_connection(*aws_cmd)
 
 # Create Airflow variable for the project S3 bucket
 set_airflow_variable(airflow_s3_variable_name, s3_bucket_name)
+set_airflow_variable("REDSHIFT_WORKGROUP", workgroup)
 
 print(
     f"Airflow connections '{conn_id}' and '{aws_conn_id}' plus variable '{airflow_s3_variable_name}' created inside "
