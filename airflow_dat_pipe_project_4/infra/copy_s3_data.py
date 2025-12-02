@@ -1,19 +1,20 @@
 import argparse
 import subprocess
+from typing import Sequence
 
+UDACITY_LOG_JSON = "s3://udacity-dend/log_json_path.json"
 UDACITY_LOG_DATA = "s3://udacity-dend/log-data/"
 UDACITY_SONG_DATA = "s3://udacity-dend/song-data/"
 
 
-def run_aws_cp(source: str, destination: str) -> None:
-    subprocess.run(
-        [
-            "aws", "s3", "cp",
-            source, destination,
-            "--recursive",
-        ],
-        check=True,
-    )
+def run_aws_cp(source: str, destination: str, *, recursive: bool = True, extra_args: Sequence[str] | None = None) -> None:
+    """Run an AWS CLI s3 cp command, optionally recursive."""
+    cmd = ["aws", "s3", "cp", source, destination]
+    if recursive:
+        cmd.append("--recursive")
+    if extra_args:
+        cmd.extend(extra_args)
+    subprocess.run(cmd, check=True)
 
 
 def main() -> None:
@@ -26,8 +27,12 @@ def main() -> None:
     args = parser.parse_args()
     target = args.target_bucket.strip().rstrip("/")
 
+    log_json_path = f"s3://{target}/"
     log_dst = f"s3://{target}/log-data/"
     song_dst = f"s3://{target}/song-data/"
+
+    print(f"Copying log json file to {log_json_path}")
+    run_aws_cp(UDACITY_LOG_JSON, log_json_path, recursive=False)
 
     print(f"Copying log data to {log_dst}")
     run_aws_cp(UDACITY_LOG_DATA, log_dst)
