@@ -98,7 +98,7 @@ def set_airflow_variable(name: str, value: str):
 add_connection(conn_id, "--conn-uri", conn_uri)
 
 # Create AWS credentials connection
-aws_conn_id = "aws_credentaials"
+aws_conn_id = "aws_credentials"
 aws_cmd = [
     aws_conn_id,
     "--conn-type", "aws",
