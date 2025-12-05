@@ -45,7 +45,7 @@ def final_project():
 
     stage_events_to_redshift = StageToRedshiftOperator(
         task_id='Stage_events',
-        target_table='staging_events',
+        table='staging_events',
         s3_bucket=s3_bucket_name,
         s3_key='log-data',
         schema='public',
@@ -56,7 +56,7 @@ def final_project():
 
     stage_songs_to_redshift = StageToRedshiftOperator(
         task_id='Stage_songs',
-        target_table='staging_songs',
+        table='staging_songs',
         s3_bucket=s3_bucket_name,
         s3_key='song-data',
         schema='public',

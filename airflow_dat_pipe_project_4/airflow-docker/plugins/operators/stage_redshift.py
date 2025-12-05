@@ -12,7 +12,7 @@ class StageToRedshiftOperator(S3ToRedshiftOperator):
 
     def __init__(
         self,
-        target_table: str,
+        table: str,
         s3_bucket: str,
         s3_key: str,
         schema: str,
@@ -33,7 +33,7 @@ class StageToRedshiftOperator(S3ToRedshiftOperator):
 
         super().__init__(
             schema=schema,
-            target_table=target_table,
+            table=table,
             s3_bucket=s3_bucket,
             s3_key=s3_key,
             redshift_conn_id=redshift_conn_id,
