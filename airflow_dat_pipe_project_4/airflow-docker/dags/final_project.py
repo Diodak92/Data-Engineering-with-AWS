@@ -10,6 +10,7 @@ from operators import (StageToRedshiftOperator, LoadFactOperator,
 from helpers import SqlQueries
 
 
+s3_bucket_name = Variable.get("S3_BUCKET")
 redshift_conn = BaseHook.get_connection("redshift_serverless")
 # CLUSTER_ID = redshift_conn.extra_dejson.get("cluster_identifier")
 WORKGROUP_NAME = Variable.get("REDSHIFT_WORKGROUP", default_var=None) or redshift_conn.extra_dejson.get("workgroup_name")
@@ -37,10 +38,6 @@ default_args = {
 
 def final_project():
 
-    # Connection ids configured via Airflow UI/CLI
-    s3_bucket_name = Variable.get("S3_BUCKET")
-
-
     start_operator = DummyOperator(task_id='Begin_execution')
 
     stage_events_to_redshift = StageToRedshiftOperator(
@@ -51,7 +48,8 @@ def final_project():
         schema='public',
         redshift_conn_id='redshift_serverless',
         aws_conn_id='aws_credentials',
-        json_path = 's3://tomasz-temp-bucket/log_json_path.json'
+        method='REPLACE',
+        json_path = f's3://{s3_bucket_name}/log_json_path.json'
     )
 
     stage_songs_to_redshift = StageToRedshiftOperator(
@@ -62,6 +60,7 @@ def final_project():
         schema='public',
         redshift_conn_id='redshift_serverless',
         aws_conn_id='aws_credentials',
+        method='REPLACE',
     )
 
     load_songplays_table = LoadFactOperator(
