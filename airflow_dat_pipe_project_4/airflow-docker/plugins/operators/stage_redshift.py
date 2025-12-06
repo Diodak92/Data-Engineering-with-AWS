@@ -14,6 +14,7 @@ class StageToRedshiftOperator(S3ToRedshiftOperator):
         schema: str,
         redshift_conn_id: str,
         aws_conn_id: str,
+        encoding: str = "UTF8",
         json_path: str | None = None,
         copy_options: Sequence[str] | None = None,
         method: str = "APPEND",
@@ -24,6 +25,12 @@ class StageToRedshiftOperator(S3ToRedshiftOperator):
             )
 
         options: List[str] = list(copy_options or [])
+        encoding_option_present = any("encoding" in option.lower() for option in options)
+        if not encoding_option_present:
+            default_encoding = f"ENCODING AS {encoding}"
+            options.insert(0, default_encoding)
+            self.log.info(f"Added default encoding to COPY command: {default_encoding}")
+
         json_option_present = any("json" in option.lower() for option in options)
         if not json_option_present:
             default_json_option = (
