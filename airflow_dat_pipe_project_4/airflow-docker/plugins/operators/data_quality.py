@@ -14,7 +14,7 @@ class DataQualityOperator(RedshiftDataOperator):
                 database: str | None = None,
                 db_user: str | None = None,
                 sql_check: str | list[str] = "",
-                logic_test: str | None = None,
+                logic_test: Any | None = None,
                 aws_conn_id: str = "aws_default",
                 poll_interval: int = 10,
                 wait_for_completion: bool = True,
@@ -57,6 +57,7 @@ class DataQualityOperator(RedshiftDataOperator):
             raise ValueError("Data quality check failed! Query returned no results.")
 
         first_value = self._first_cell(results)
+        self.log.info(f"SQL result: {first_value}")
 
         if self.logic_test is None:
             if not first_value:
@@ -64,7 +65,13 @@ class DataQualityOperator(RedshiftDataOperator):
             self.log.info("Data quality check passed.")
             return results
 
-        passed = str(first_value) == str(self.logic_test)
+        # Allow dynamic checks like "value > 0" or "value == True" via eval.
+        eval_statement = f"{first_value} {self.logic_test}"
+        self.log.info(f"Evaluating test: {eval_statement}")
+        try:
+            passed = bool(eval(eval_statement))
+        except Exception as exc:
+            raise ValueError(f"Failed to evaluate logic_test '{self.logic_test}': {exc}") from exc
 
         if not passed:
             raise ValueError(f"Data quality check failed! Expected {self.logic_test}, got {first_value}")
@@ -75,12 +82,18 @@ class DataQualityOperator(RedshiftDataOperator):
     @staticmethod
     def _first_cell(result: Any) -> Any:
         """Return the first cell from a Redshift Data"""
-        records = result.get("records") if isinstance(result, dict) else result
+        records = None
+        if isinstance(result, dict):
+            records = result.get("Records") or result.get("records")
+        if records is None:
+            records = result
         if not records:
             return None
-        cell = records[0]
-        if isinstance(cell, (list, tuple)):
-            cell = cell[0] if cell else None
+        row = records[0]
+        cell = row[0] if isinstance(row, (list, tuple)) else row
         if isinstance(cell, dict):
-            cell = next(iter(cell.values()), None)
+            for key in ("stringValue", "longValue", "doubleValue", "booleanValue", "isNull"):
+                if key in cell:
+                    return None if key == "isNull" else cell[key]
+            return next(iter(cell.values()), None)
         return cell
