@@ -20,7 +20,7 @@ class LoadFactOperator(RedshiftDataOperator):
                 ):
         
         if workgroup_name and cluster_identifier:
-            raise ValueError("Provide only one of workgroup_name or cluster_identifier for LoadDimensionOperator.")
+            raise ValueError("Provide only one of workgroup_name or cluster_identifier for LoadFactOperator.")
 
         # Only pass the configured Redshift target to avoid Data API validation errors.
         redshift_target: dict[str, str] = {}
@@ -29,7 +29,7 @@ class LoadFactOperator(RedshiftDataOperator):
         if cluster_identifier:
             redshift_target["cluster_identifier"] = cluster_identifier
         if not redshift_target:
-            raise ValueError("LoadDimensionOperator requires either workgroup_name (serverless) or cluster_identifier (provisioned).")
+            raise ValueError("LoadFactOperator requires either workgroup_name (serverless) or cluster_identifier (provisioned).")
         
         sql_insert = f"INSERT INTO {target_table} {sql}"
         self.log.info(f"Inserting data into {target_table}")
