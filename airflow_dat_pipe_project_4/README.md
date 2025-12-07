@@ -22,7 +22,7 @@ Outputs are cached to `infra/tf_outputs.json` for the helper scripts. Terraform 
 ## Copy data into S3
 Copy the Udacity DEND datasets into your project bucket:
 ```bash
-python infra/copy_s3_data.py --target-bucket <your-bucket-name>
+python infra/sync_s3_data.py --target-bucket <your-bucket-name>
 ```
 The bucket name comes from Terraform output `s3_bucket_name`.
 
