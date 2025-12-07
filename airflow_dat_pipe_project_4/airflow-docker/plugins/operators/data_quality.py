@@ -60,24 +60,24 @@ class DataQualityOperator(RedshiftDataOperator):
         self.log.info(f"SQL result: {first_value}")
 
         if self.logic_test is None:
-            if not first_value:
+            if not bool(first_value):
                 raise ValueError("Data quality check failed!")
             self.log.info("Data quality check passed.")
             return results
+        else:
+            # Allow dynamic checks like "value > 0" or "value == True" via eval.
+            eval_statement = f"{first_value} {self.logic_test}"
+            self.log.info(f"Evaluating test: {eval_statement}")
+            try:
+                passed = bool(eval(eval_statement))
+            except Exception as exc:
+                raise ValueError(f"Failed to evaluate logic_test '{self.logic_test}': {exc}") from exc
 
-        # Allow dynamic checks like "value > 0" or "value == True" via eval.
-        eval_statement = f"{first_value} {self.logic_test}"
-        self.log.info(f"Evaluating test: {eval_statement}")
-        try:
-            passed = bool(eval(eval_statement))
-        except Exception as exc:
-            raise ValueError(f"Failed to evaluate logic_test '{self.logic_test}': {exc}") from exc
+            if not passed:
+                raise ValueError(f"Data quality check failed! Expected {self.logic_test}, got {first_value}")
 
-        if not passed:
-            raise ValueError(f"Data quality check failed! Expected {self.logic_test}, got {first_value}")
-
-        self.log.info("Data quality check passed.")
-        return results
+            self.log.info("Data quality check passed.")
+            return results
 
     @staticmethod
     def _first_cell(result: Any) -> Any:
