@@ -8,30 +8,37 @@ Airflow demo project that stages event and song data from S3 into Amazon Redshif
 - Existing S3 bucket containing the raw data (log-data, song-data) and JSON path file.
 
 ## Infrastructure setup (Terraform)
-From `infra/`:
-```bash
-cd infra
-terraform init
-terraform apply
-```
-Outputs are cached to `infra/tf_outputs.json` for the helper scripts. Terraform provisions:
-- Redshift Serverless namespace/workgroup
-- IAM user with access keys for Airflow
-- S3 bucket for the pipeline data
+1) From `infra/`:
+   ```bash
+   cd infra
+   terraform init
+   terraform apply
+   ```
+2) Outputs are cached to `infra/tf_outputs.json` for the helper scripts.
+3) Terraform provisions:
+   - Redshift Serverless namespace/workgroup
+   - IAM user with access keys for Airflow
+   - S3 bucket for the pipeline data
 
 ## Copy data into S3
-Copy the Udacity DEND datasets into your project bucket:
-```bash
-python infra/sync_s3_data.py --target-bucket <your-bucket-name>
-```
-The bucket name comes from Terraform output `s3_bucket_name`.
+1) Copy the Udacity DEND datasets into your project bucket:
+   ```bash
+   python infra/sync_s3_data.py --target-bucket <your-bucket-name>
+   ```
+2) The bucket name comes from Terraform output `s3_bucket_name`.
 
 ## Create tables in Redshift
-Run the table DDLs (default `create_tables.sql`) using Terraform-provided credentials:
-```bash
-python infra/run_queries.py --sql-file create_tables.sql
-```
-This uses `infra/tf_outputs.json` or runs `terraform output -json` if the cache is missing.
+1) Run the table DDLs (default `create_tables.sql`) using Terraform-provided credentials:
+   ```bash
+   python infra/run_queries.py --sql-file create_tables.sql
+   ```
+   Uses `infra/tf_outputs.json` or runs `terraform output -json` if the cache is missing.
+2) To create tables owned by your IAM DB user (avoid permission errors in the DAG), request temporary credentials:
+   ```bash
+   python infra/run_queries.py --use-iam --sql-file create_tables.sql
+   # optional: --aws-profile <profile> --region <region> --workgroup-name <wg-name>
+   ```
+   `--use-iam` calls the Redshift Serverless `get_credentials` API and connects with those temporary IAM credentials before running the SQL.
 
 ## Airflow environment
 1) Start Airflow locally:
@@ -42,16 +49,15 @@ This uses `infra/tf_outputs.json` or runs `terraform output -json` if the cache 
 2) Once the webserver is up, open http://localhost:8080 (default creds: `airflow` / `airflow` unless changed).
 
 ## Airflow Connections & Variables
-After `docker-compose up -d`, run:
-```bash
-python infra/add_airflow_con.py
-```
-This injects into the running Airflow webserver container:
-- Connection `redshift_serverless` (Data API) using Terraform outputs.
-- Connection `aws_credentials` with the IAM access keys Terraform created.
-- Variables: `S3_BUCKET` (name from Terraform) and `REDSHIFT_WORKGROUP`.
-
-If you prefer manual creation, use Admin -> Connections/Variables in the UI with the same values.
+1) After `docker-compose up -d`, run:
+   ```bash
+   python infra/add_airflow_con.py
+   ```
+2) This injects into the running Airflow webserver container:
+   - Connection `redshift_serverless` (Data API) using Terraform outputs.
+   - Connection `aws_credentials` with the IAM access keys Terraform created.
+   - Variables: `S3_BUCKET` (name from Terraform) and `REDSHIFT_WORKGROUP`.
+3) For manual setup, use Admin -> Connections/Variables in the UI with the same values.
 
 ## Running the DAG
 1) Enable the DAG `final_project` in the Airflow UI.
