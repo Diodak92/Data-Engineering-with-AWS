@@ -95,3 +95,19 @@ CREATE TABLE public.users (
 	"level" varchar(256),
 	CONSTRAINT users_pkey PRIMARY KEY (userid)
 );
+
+GRANT USAGE ON SCHEMA public TO "IAM:aws_airflow_admin";
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "IAM:aws_airflow_admin";
+-- Fix permission issue for TRUNCATE command. In Redshift, TRUNCATE is allowed only for the table owner 
+ALTER TABLE public.users OWNER TO "IAM:aws_airflow_admin";
+ALTER TABLE public.songs OWNER TO "IAM:aws_airflow_admin";
+ALTER TABLE public.artists OWNER TO "IAM:aws_airflow_admin";
+ALTER TABLE public.time OWNER TO "IAM:aws_airflow_admin";
+ALTER TABLE public.staging_events OWNER TO "IAM:aws_airflow_admin";
+ALTER TABLE public.staging_songs OWNER TO "IAM:aws_airflow_admin";
+ALTER TABLE public.songplays OWNER TO "IAM:aws_airflow_admin";
+GRANT USAGE ON SCHEMA public TO "IAM:aws_airflow_admin";
+GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "IAM:aws_airflow_admin";
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+  GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "IAM:aws_airflow_admin";
