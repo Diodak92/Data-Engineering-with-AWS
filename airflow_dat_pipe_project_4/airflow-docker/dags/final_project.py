@@ -7,7 +7,7 @@ from airflow.models import Variable
 from airflow.operators.dummy import DummyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                        LoadDimensionOperator, DataQualityOperator)
-from helpers import SqlQueries
+from helpers import SqlQueries, DataQualityTests
 
 
 s3_bucket_name = Variable.get("S3_BUCKET")
@@ -113,24 +113,11 @@ def final_project():
         aws_conn_id='aws_credentials',
     )
 
-    run_quality_checks = DataQualityOperator(
-        task_id='Run_data_quality_checks',
+    run_artist_quality_check = DataQualityOperator(
+        task_id='Run_artist_quality_check',
         workgroup_name=WORKGROUP_NAME,
         database=DATABASE,
-        #sql_check = """SELECT * FROM public.staging_songs LIMIT 1;""",
-        sql_check= """
-                    WITH artists_stg AS (
-                    SELECT COUNT(DISTINCT(artist_id)) AS stg_artist_cnt
-                    FROM public.staging_songs
-                    ),
-                    artists AS (
-                    SELECT COUNT(DISTINCT(artistid)) AS artist_cnt
-                    FROM public.songs
-                    )
-                    SELECT artists_stg.stg_artist_cnt = artists.artist_cnt AS cnt_test
-                    FROM artists_stg, artists;
-                   """,
-        logic_test = "== True",
+        sql_check=DataQualityTests.duplicated_artitsts,
         aws_conn_id='aws_credentials',
     )
 
@@ -138,15 +125,18 @@ def final_project():
         task_id='Run_song_null_check',
         workgroup_name=WORKGROUP_NAME,
         database=DATABASE,
-        #sql_check = """SELECT * FROM public.staging_songs LIMIT 1;""",
-        sql_check= """
-                    SELECT COUNT(title) AS null_cnt
-                    FROM public.songs
-                    WHERE (title IS NULL);
-                   """,
-        logic_test = "== 0",
+        sql_check=DataQualityTests.missing_songplay_ids,
         aws_conn_id='aws_credentials',
     )
+
+    run_song_year_check = DataQualityOperator(
+        task_id='Run_song_year_check',
+        workgroup_name=WORKGROUP_NAME,
+        database=DATABASE,
+        sql_check=DataQualityTests.incorrect_song_year,
+        aws_conn_id='aws_credentials',
+    )
+
 
     quality_start = DummyOperator(task_id='Start_quality_checks')
     quality_end = DummyOperator(task_id='End_quality_checks')
@@ -157,7 +147,7 @@ def final_project():
                              load_artist_dimension_table, load_time_dimension_table]
     [load_user_dimension_table, load_song_dimension_table, 
      load_artist_dimension_table, load_time_dimension_table] >> quality_start
-    quality_start >> [run_quality_checks, run_song_quality_check] >> quality_end
+    quality_start >> [run_artist_quality_check, run_song_quality_check, run_song_year_check] >> quality_end
 
 
 final_project_dag = final_project()
