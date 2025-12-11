@@ -24,9 +24,8 @@ Airflow demo project that stages event and song data from S3 into Amazon Redshif
 1) Copy the Udacity DEND datasets into your project bucket:
    ```bash
    aws s3 sync s3://udacity-dend s3://tomasz-temp-bucket
-   --exclude "*pagila/*"
-   --exclude "*data-pipelines/*"
-   --exclude "*udac-data-pipelines/*"
+   --exclude "pagila/*"
+   --exclude "udac-data-pipelines/*"
    --delete
    ```
 2) The bucket name comes from Terraform output `s3_bucket_name`.
