@@ -27,8 +27,7 @@ Airflow demo project that stages event and song data from S3 into Amazon Redshif
    --exclude "*pagila/*"
    --exclude "*dac-data-pipelines/*"
    --delete
-   --no-preserve-tags
-   --fail-on-error=false
+   --progress-multiline
    ```
 2) The bucket name comes from Terraform output `s3_bucket_name`.
 
