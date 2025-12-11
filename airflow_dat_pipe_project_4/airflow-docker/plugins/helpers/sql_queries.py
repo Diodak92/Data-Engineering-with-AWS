@@ -40,3 +40,25 @@ class SqlQueries:
                extract(month from start_time), extract(year from start_time), extract(dayofweek from start_time)
         FROM songplays
     """)
+
+class DataQualityTests:
+    duplicated_artitsts = ("""
+        SELECT artistid, COUNT(DISTINCT(artistid))
+        FROM artists
+        GROUP BY artistid
+        HAVING COUNT(DISTINCT(artistid)) > 1;
+    """)
+
+    missing_songplay_ids = ("""
+        SELECT playid, userid, songid, sessionid
+        FROM public.songplays
+        WHERE songid IS NULL
+        ORDER BY playid;
+    """)
+
+    incorrect_song_year = ("""
+        SELECT *
+        FROM public.songs
+        WHERE year = 0 OR year IS NULL;
+    """)
+
