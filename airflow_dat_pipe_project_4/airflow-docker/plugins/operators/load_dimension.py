@@ -52,11 +52,10 @@ class LoadDimensionOperator(RedshiftDataOperator):
         )
 
     def execute(self, context):
-        """Log start/end around the Redshift Data API execution."""
         if self.truncate_before_insert:
-            self.log.info("Truncating table %s before insert", self.target_table)
-        self.log.info("Starting dimension load into %s", self.target_table)
-        self.log.info("Executing SQL statements: %s", self.sql)
+            self.log.info(f"Truncating table {self.target_table} before insert")
+        self.log.info(f"Starting dimension load into {self.target_table}")
+        self.log.info(f"Executing SQL statements: {self.sql}")
         result = super().execute(context)
-        self.log.info("Finished dimension load into %s", self.target_table)
+        self.log.info(f"Finished dimension load into {self.target_table}")
         return result

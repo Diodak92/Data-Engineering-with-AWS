@@ -52,7 +52,7 @@ class DataQualityOperator(RedshiftDataOperator):
 
     def execute(self, context: dict[str, Any]) -> Any:
         """Run the configured query then validate the returned results."""
-        self.log.info("Running data quality check SQL: %s", self.sql)
+        self.log.info(f"Running data quality check SQL: {self.sql}")
         df = self._to_dataframe(super().execute(context))
         self._log_frame(df)
         first_value = df.iloc[0, 0] if not df.empty else None

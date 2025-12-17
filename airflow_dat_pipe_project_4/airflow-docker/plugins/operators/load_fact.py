@@ -46,9 +46,8 @@ class LoadFactOperator(RedshiftDataOperator):
         )
 
     def execute(self, context):
-        """Log start/end around the Redshift Data API execution."""
-        self.log.info("Starting load into %s", self.target_table)
-        self.log.info("Executing SQL: %s", self.sql)
+        self.log.info(f"Starting load into {self.target_table}")
+        self.log.info(f"Executing SQL: {self.sql}")
         result = super().execute(context)
-        self.log.info("Finished load into %s", self.target_table)
+        self.log.info(f"Finished load into {self.target_table}")
         return result
