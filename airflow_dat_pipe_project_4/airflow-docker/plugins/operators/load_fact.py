@@ -32,7 +32,7 @@ class LoadFactOperator(RedshiftDataOperator):
             raise ValueError("LoadFactOperator requires either workgroup_name (serverless) or cluster_identifier (provisioned).")
         
         sql_insert = f"INSERT INTO {target_table} {sql}"
-        self.log.info(f"Inserting data into {target_table}")
+        self.target_table = target_table
 
         super().__init__(
             database=database,
@@ -44,4 +44,11 @@ class LoadFactOperator(RedshiftDataOperator):
             **redshift_target,
             **kwargs,
         )
-        self.log.info(f"Data inserted successfully into {target_table}")
+
+    def execute(self, context):
+        """Log start/end around the Redshift Data API execution."""
+        self.log.info("Starting load into %s", self.target_table)
+        self.log.info("Executing SQL: %s", self.sql)
+        result = super().execute(context)
+        self.log.info("Finished load into %s", self.target_table)
+        return result

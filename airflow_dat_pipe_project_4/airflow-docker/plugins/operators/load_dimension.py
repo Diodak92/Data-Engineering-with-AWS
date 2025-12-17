@@ -34,12 +34,11 @@ class LoadDimensionOperator(RedshiftDataOperator):
         
         sql_insert = f"INSERT INTO {target_table} {sql}"
         sql_queries = [sql_insert]
+        self.target_table = target_table
+        self.truncate_before_insert = truncate
 
         if truncate:
-            self.log.info(f"Truncating table {target_table} before insert")
             sql_queries.insert(0, f"TRUNCATE {target_table}")
-
-        self.log.info(f"Inserting data into {target_table}")
 
         super().__init__(
             database=database,
@@ -51,4 +50,13 @@ class LoadDimensionOperator(RedshiftDataOperator):
             **redshift_target,
             **kwargs,
         )
-        self.log.info(f"Data inserted successfully into {target_table}")
+
+    def execute(self, context):
+        """Log start/end around the Redshift Data API execution."""
+        if self.truncate_before_insert:
+            self.log.info("Truncating table %s before insert", self.target_table)
+        self.log.info("Starting dimension load into %s", self.target_table)
+        self.log.info("Executing SQL statements: %s", self.sql)
+        result = super().execute(context)
+        self.log.info("Finished dimension load into %s", self.target_table)
+        return result
