@@ -1,9 +1,9 @@
 from datetime import timedelta
 import pendulum
 from airflow import DAG
-from airflow.hooks.base import BaseHook
+from airflow.sdk.bases.hook import BaseHook
 from airflow.models import Variable
-from airflow.operators.empty import EmptyOperator
+from airflow.providers.standard.operators.empty import EmptyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                        LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries, DataQualityTests
