@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 import pendulum
-import os
-from airflow.decorators import dag
+from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.models import Variable
-from airflow.operators.dummy import DummyOperator
+from airflow.operators.empty import EmptyOperator
 from operators import (StageToRedshiftOperator, LoadFactOperator,
                        LoadDimensionOperator, DataQualityOperator)
 from helpers import SqlQueries, DataQualityTests
@@ -21,24 +20,22 @@ DATABASE = redshift_conn.schema
 
 default_args = {
     'owner': 'udacity',
-    'start_date': pendulum.now(),
     'depends_on_past': False,
     'retries': 3,
     'retry_delay': timedelta(minutes=5),
-    'catchup': False,
     'email_on_retry': False,
-    'max_active_runs': 1
 }
 
-@dag(
-    default_args=default_args,
+with DAG(
+    dag_id="final_project",
     description='Load and transform data in Redshift with Airflow',
-    schedule_interval='0 * * * *',
-)
+    schedule='0 * * * *',
+    catchup=False,
+    max_active_runs=1,
+    default_args=default_args,
+) as final_project_dag:
 
-def final_project():
-
-    start_operator = DummyOperator(task_id='Begin_execution')
+    start_operator = EmptyOperator(task_id='Begin_execution')
 
     stage_events_to_redshift = StageToRedshiftOperator(
         task_id='Stage_events',
@@ -138,8 +135,8 @@ def final_project():
     )
 
 
-    quality_start = DummyOperator(task_id='Start_quality_checks')
-    quality_end = DummyOperator(task_id='End_quality_checks')
+    quality_start = EmptyOperator(task_id='Start_quality_checks')
+    quality_end = EmptyOperator(task_id='End_quality_checks')
 
     start_operator >> [stage_events_to_redshift, stage_songs_to_redshift]
     [stage_events_to_redshift, stage_songs_to_redshift] >> load_songplays_table
@@ -148,6 +145,3 @@ def final_project():
     [load_user_dimension_table, load_song_dimension_table, 
      load_artist_dimension_table, load_time_dimension_table] >> quality_start
     quality_start >> [run_artist_quality_check, run_song_quality_check, run_song_year_check] >> quality_end
-
-
-final_project_dag = final_project()

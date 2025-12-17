@@ -79,7 +79,7 @@ if not all([endpoint, port, schema, login, password]):
 conn_uri = f"redshift://{login}:{password}@{endpoint}:{port}/{schema}"
 
 # Name of your Airflow container (check with `docker ps`)
-airflow_container = "airflow-docker-airflow-webserver-1"
+airflow_container = "airflow-docker-airflow-apiserver-1"
 
 def run_airflow_cli(*args):
     subprocess.run([
