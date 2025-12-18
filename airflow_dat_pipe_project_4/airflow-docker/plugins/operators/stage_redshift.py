@@ -1,10 +1,19 @@
 from typing import List, Sequence
+
 from airflow.providers.amazon.aws.transfers.s3_to_redshift import S3ToRedshiftOperator
 
 
 class StageToRedshiftOperator(S3ToRedshiftOperator):
+    """Custom wrapper around S3ToRedshiftOperator with sane COPY defaults."""
 
     ui_color = '#358140'
+    template_fields: Sequence[str] = (
+        "s3_bucket",
+        "s3_key",
+        "schema",
+        "table",
+        "json_path",
+    )
 
     def __init__(
         self,
@@ -20,26 +29,16 @@ class StageToRedshiftOperator(S3ToRedshiftOperator):
         method: str = "APPEND",
         **kwargs,
     ):
-        self.log.info(
-            f"Staging from s3://{s3_bucket}/{s3_key} into {schema}.{table} (method={method})"
-            )
+        self.json_path = json_path
 
         options: List[str] = list(copy_options or [])
         encoding_option_present = any("encoding" in option.lower() for option in options)
         if not encoding_option_present:
-            default_encoding = f"ENCODING AS {encoding}"
-            options.insert(0, default_encoding)
-            self.log.info(f"Added default encoding to COPY command: {default_encoding}")
+            options.insert(0, f"ENCODING AS {encoding}")
 
         json_option_present = any("json" in option.lower() for option in options)
         if not json_option_present:
-            default_json_option = (
-                f"FORMAT AS JSON '{json_path}'" if json_path else "FORMAT AS JSON 'auto'"
-            )
-            options.insert(0, default_json_option)
-            self.log.info(f"Added default JSON option to COPY command: {default_json_option}")
-
-        self.log.debug(f"Final COPY options: {options}")
+            options.insert(0, f"FORMAT AS JSON '{json_path}'" if json_path else "FORMAT AS JSON 'auto'")
 
         super().__init__(
             schema=schema,
@@ -52,5 +51,3 @@ class StageToRedshiftOperator(S3ToRedshiftOperator):
             method=method,
             **kwargs,
         )
-
-        self.log.info(f"Data inserted successfully into {schema}.{table}")

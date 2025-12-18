@@ -1,26 +1,31 @@
-from typing import Any
+from typing import Any, Sequence
+
 import pandas as pd
 from airflow.providers.amazon.aws.operators.redshift_data import RedshiftDataOperator
+from airflow.utils.context import Context
 
 
 class DataQualityOperator(RedshiftDataOperator):
+    """Run a SQL check against Redshift and validate the result."""
 
     ui_color = '#89DA59'
+    template_fields: Sequence[str] = ("sql", "logic_test", "database", "db_user")
+    template_ext: Sequence[str] = (".sql",)
+    template_fields_renderers = {"sql": "sql"}
 
     def __init__(
-                self,
-                workgroup_name: str | None = None,
-                cluster_identifier: str | None = None,
-                database: str | None = None,
-                db_user: str | None = None,
-                sql_check: str | list[str] = "",
-                logic_test: Any | None = None,
-                aws_conn_id: str = "aws_default",
-                poll_interval: int = 10,
-                wait_for_completion: bool = True,
-                **kwargs,
-                ):
-        
+        self,
+        workgroup_name: str | None = None,
+        cluster_identifier: str | None = None,
+        database: str | None = None,
+        db_user: str | None = None,
+        sql_check: str | list[str] = "",
+        logic_test: Any | None = None,
+        aws_conn_id: str = "aws_default",
+        poll_interval: int = 10,
+        wait_for_completion: bool = True,
+        **kwargs,
+    ):
         if workgroup_name and cluster_identifier:
             raise ValueError("Provide only one of workgroup_name or cluster_identifier for DataQualityOperator.")
 
@@ -34,7 +39,7 @@ class DataQualityOperator(RedshiftDataOperator):
             raise ValueError("DataQualityOperator requires either workgroup_name (serverless) or cluster_identifier (provisioned).")
         if not sql_check:
             raise ValueError("DataQualityOperator requires at least one SQL check to run.")
-        
+
         self.logic_test = logic_test
 
         super().__init__(
@@ -44,13 +49,13 @@ class DataQualityOperator(RedshiftDataOperator):
             aws_conn_id=aws_conn_id,
             poll_interval=poll_interval,
             wait_for_completion=wait_for_completion,
-            return_sql_result = True,
+            return_sql_result=True,
             retries=0,
             **redshift_target,
             **kwargs,
         )
 
-    def execute(self, context: dict[str, Any]) -> Any:
+    def execute(self, context: Context) -> Any:
         """Run the configured query then validate the returned results."""
         self.log.info(f"Running data quality check SQL: {self.sql}")
         df = self._to_dataframe(super().execute(context))
